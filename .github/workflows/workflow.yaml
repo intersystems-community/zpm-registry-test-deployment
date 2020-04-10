@@ -18,7 +18,7 @@ env:
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   K8S_NAMESPACE: iris
-  STATEFULSET_NAME: zpm-registry
+  STATEFULSET_NAME: zpm-registry-testserver
 
 jobs:
   gcloud-setup-and-build-and-publish-to-GCR:

@@ -1,20 +1,22 @@
-FROM store/intersystems/iris-community:2019.4.0.383.0
+FROM intersystemsdc/iris-community:2020.1.0.209.0-zpm
 
 USER root
 
-WORKDIR /opt/zpm
+WORKDIR /opt/irisapp
 RUN chown ${ISC_PACKAGE_MGRUSER}:${ISC_PACKAGE_IRISGROUP} .
 
 USER irisowner
 
 COPY  Installer.cls .
-COPY  src src
 COPY irissession.sh /
 SHELL ["/irissession.sh"]
 
 RUN \
   do $SYSTEM.OBJ.Load("Installer.cls", "ck") \
-  set sc = ##class(ZPM.Installer).setup()
+  set sc = ##class(App.Installer).setup() \
+  zn "IRISAPP" \
+  zpm "install zpm-registry"
+
 
 # bringing the standard shell back
 SHELL ["/bin/bash", "-c"]
