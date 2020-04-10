@@ -1,4 +1,4 @@
-# intersystems zpm-registry
+# intersystems zpm-registry test server
 ZPM Registry is a a server part of ObjectScript Package Manager.
 
 ZPM Registry hosts ZPM packages and publishes API to publish, list and deploy packages.
