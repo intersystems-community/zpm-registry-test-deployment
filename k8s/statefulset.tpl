@@ -16,7 +16,6 @@ spec:
       labels:
         app: zpm-registry
     spec:
-
       initContainers:
       - name: zpm-volume-change-owner-hack
         image: busybox
@@ -60,8 +59,7 @@ spec:
           httpGet:
             path: /csp/sys/UtilHome.csp
             port: 52773
-            periodSeconds: 10
-
+          periodSeconds: 10
         volumeMounts:
         - mountPath: /opt/zpm/REGISTRY-DATA
           name: zpm-registry-volume
