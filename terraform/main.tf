@@ -43,13 +43,13 @@
 terraform {
   required_version = "~> 0.12"
   backend "gcs" {
-    bucket      = "zpm-registry-testserver"
+    bucket      = "zpm-registry-test"
     prefix      = "terraform/state"
   }
 }
 
 provider "google" {
-  project     = "development-257513"
+  project     = "zpm-package-manager"
   region      = "europe-west1"
 }
 
