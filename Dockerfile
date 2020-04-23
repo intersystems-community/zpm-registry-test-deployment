@@ -17,7 +17,7 @@ RUN \
   zn "IRISAPP" \
   zpm "install zpm-registry" \
   zn "%SYS" \
-  zpm "install isc-apptools-lockdown" 
+  zpm "install isc-apptools-lockdown" \
   s sc=##class(App.Installer).LockRegistry("test","test","IRISAPP","PassWord42")
 
 # bringing the standard shell back

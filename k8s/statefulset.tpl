@@ -37,15 +37,6 @@ spec:
       containers:
       - image: DOCKER_REPO_NAME:DOCKER_IMAGE_TAG
         name: zpm-registry
-        lifecycle:
-          postStart:
-            exec:
-              command:
-              - /bin/bash
-              - -c
-              - |
-                sleep 30
-                iris session iris < /mount-helper/mount_registry_data
         ports:
         - containerPort: 52773
           name: web
