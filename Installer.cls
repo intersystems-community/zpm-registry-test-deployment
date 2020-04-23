@@ -44,7 +44,7 @@ ClassMethod LockRegistry(pUsername As %String, pPassword As %String, Namespace, 
 	w !,"Add priveleges "
 	
 	// 4. LockDown 
-	set tSC= ##class(App.Security.LockDown).Apply(NewPassSys)
+	//set tSC= ##class(App.Security.LockDown).Apply(NewPassSys)
 
 	// 3. AutheEnabled = 96 ; Password,Unauthenticated
 	set prop("AutheEnabled")=96
