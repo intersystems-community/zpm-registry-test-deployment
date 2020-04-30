@@ -3,7 +3,8 @@ ZPM Registry is a a server part of ObjectScript Package Manager.
 
 ZPM Registry hosts ZPM packages and publishes API to publish, list and deploy packages.
 
-This is a test package
+This is a test package .Available [here](https://testpm.community.intersystems.com/registry).
+
 
 InterSystems Developers Community has the the public ZPM Registry - Commmunity Registry hosted on pm.community.intersystems.com and this code works there. Here is [the list of available packages](https://pm.community.intersystems.com/packages/-/all).
 [ZPM Client](https://github.com/intersystems-community/zpm) by default installs packages from Community Registry.
