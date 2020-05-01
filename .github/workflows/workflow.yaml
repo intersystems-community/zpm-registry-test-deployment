@@ -3,8 +3,7 @@ name: Build ZPM-registry image, deploy it to GCR. Run ZPM-registry in GKE
 on:
   push:
     branches:
-    # - master
-    - remove-terraform
+    - master
 
 # Environment variables.
 # ${{ secrets }} are taken from GitHub -> Settings -> Secrets
