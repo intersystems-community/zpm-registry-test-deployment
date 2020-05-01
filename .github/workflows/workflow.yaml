@@ -24,7 +24,6 @@ env:
   HELM_VERSION: 3.1.1
   EXTERNAL_DNS_CHART_VERSION: 2.20.6
 
-
 jobs:
   gcloud-setup-and-build-and-publish-to-GCR:
     name: Setup gcloud utility, Build ZPM image and Publish it to Container Registry
