@@ -12,7 +12,6 @@ on:
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-  GOOGLE_CREDENTIALS: ${{ secrets.TF_SERVICE_ACCOUNT_KEY }}
   GITHUB_SHA: ${{ github.sha }}
   GCR_LOCATION: ${{ secrets.GCR_LOCATION }}
   IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
@@ -20,9 +19,6 @@ env:
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   K8S_NAMESPACE: iris
   STATEFULSET_NAME: zpm-registry
-  DNS_ZONE: test.pm.community.intersystems.com
-  HELM_VERSION: 3.1.1
-  EXTERNAL_DNS_CHART_VERSION: 2.20.6
 
 jobs:
   gcloud-setup-and-build-and-publish-to-GCR:
@@ -83,24 +79,3 @@ jobs:
         kubectl apply -f ingress.yaml
         kubectl apply -f statefulset.yaml
         kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${STATEFULSET_NAME}
-    - name: Install External DNS
-      run: |
-        wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
-        tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
-        cd linux-amd64
-        ./helm version
-        ./helm repo add bitnami https://charts.bitnami.com/bitnami
-        gcloud container clusters get-credentials ${GKE_CLUSTER} --zone ${GKE_ZONE} --project ${PROJECT_ID}
-        echo ${GOOGLE_CREDENTIALS} > ./credentials.json
-        kubectl create secret generic external-dns --from-file=./credentials.json --dry-run -o yaml | kubectl apply -f -
-        ./helm upgrade external-dns bitnami/external-dns \
-          --install                                      \
-          --version=${EXTERNAL_DNS_CHART_VERSION}        \
-          --set provider=google                          \
-          --set google.project=${PROJECT_ID}             \
-          --set google.serviceAccountSecret=external-dns \
-          --set registry=txt                             \
-          --set txtOwnerId=k8s                           \
-          --set policy=sync                              \
-          --set domainFilters={${DNS_ZONE}}              \
-          --set rbac.create=true
