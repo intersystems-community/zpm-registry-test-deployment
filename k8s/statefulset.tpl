@@ -37,6 +37,15 @@ spec:
       containers:
       - image: DOCKER_REPO_NAME:DOCKER_IMAGE_TAG
         name: zpm-registry
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - |
+                sleep 30
+                iris session iris < /mount-helper/mount_registry_data
         ports:
         - containerPort: 52773
           name: web
@@ -44,13 +53,13 @@ spec:
           httpGet:
             path: /csp/sys/UtilHome.csp
             port: 52773
-          initialDelaySeconds: 10
-          periodSeconds: 10
+          initialDelaySeconds: 30
+          periodSeconds: 30
         livenessProbe:
           httpGet:
             path: /csp/sys/UtilHome.csp
             port: 52773
-          periodSeconds: 10
+          periodSeconds: 30
         volumeMounts:
         - mountPath: /opt/zpm/REGISTRY-DATA
           name: zpm-registry-volume

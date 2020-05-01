@@ -1,4 +1,4 @@
-name: Build ZPM-registry image, deploy it to GCR. Run GKE. Run ZPM-registry in GKE
+name: Build ZPM-registry image, deploy it to GCR. Run ZPM-registry in GKE
 
 on:
   push:
@@ -11,7 +11,6 @@ on:
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-  GOOGLE_CREDENTIALS: ${{ secrets.TF_SERVICE_ACCOUNT_KEY }}
   GITHUB_SHA: ${{ github.sha }}
   GCR_LOCATION: ${{ secrets.GCR_LOCATION }}
   IMAGE_NAME: ${{ secrets.IMAGE_NAME }}
@@ -19,10 +18,6 @@ env:
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   K8S_NAMESPACE: iris
   STATEFULSET_NAME: zpm-registry
-  DNS_ZONE: testpm.community.intersystems.com
-  HELM_VERSION: 3.1.1
-  EXTERNAL_DNS_CHART_VERSION: 2.20.6
-
 
 jobs:
   gcloud-setup-and-build-and-publish-to-GCR:
@@ -50,49 +45,10 @@ jobs:
       run: |
         docker push ${GCR_LOCATION}/${PROJECT_ID}/${IMAGE_NAME}:${GITHUB_SHA}
 
-  gke-provisioner:
-    # Inspired by:
-    ## https://www.terraform.io/docs/github-actions/getting-started.html
-    ## https://github.com/hashicorp/terraform-github-actions
-    name: Provision GKE cluster
-    runs-on: ubuntu-18.04
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Terraform init
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'init'
-        tf_actions_working_dir: 'terraform'
-
-    - name: Terraform validate
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'validate'
-        tf_actions_working_dir: 'terraform'
-
-    - name: Terraform plan
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'plan'
-        tf_actions_working_dir: 'terraform'
-
-    - name: Terraform apply
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'apply'
-        tf_actions_working_dir: 'terraform'
-
   kubernetes-deploy:
     name: Deploy Kubernetes manifests to GKE cluster
     needs:
     - gcloud-setup-and-build-and-publish-to-GCR
-    - gke-provisioner
     runs-on: ubuntu-18.04
     steps:
     - name: Checkout
@@ -122,24 +78,3 @@ jobs:
         kubectl apply -f ingress.yaml
         kubectl apply -f statefulset.yaml
         kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${STATEFULSET_NAME}
-    - name: Install External DNS
-      run: |
-        wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
-        tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz
-        cd linux-amd64
-        ./helm version
-        ./helm repo add bitnami https://charts.bitnami.com/bitnami
-        gcloud container clusters get-credentials ${GKE_CLUSTER} --zone ${GKE_ZONE} --project ${PROJECT_ID}
-        echo ${GOOGLE_CREDENTIALS} > ./credentials.json
-        kubectl create secret generic external-dns --from-file=./credentials.json --dry-run -o yaml | kubectl apply -f -
-        ./helm upgrade external-dns bitnami/external-dns \
-          --install                                      \
-          --version=${EXTERNAL_DNS_CHART_VERSION}        \
-          --set provider=google                          \
-          --set google.project=${PROJECT_ID}             \
-          --set google.serviceAccountSecret=external-dns \
-          --set registry=txt                             \
-          --set txtOwnerId=k8s                           \
-          --set policy=sync                              \
-          --set domainFilters={${DNS_ZONE}}              \
-          --set rbac.create=true
