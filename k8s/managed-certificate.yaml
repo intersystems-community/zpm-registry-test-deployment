@@ -5,5 +5,4 @@ metadata:
   namespace: iris
 spec:
   domains:
-    - testpm.community.intersystems.com
-
+    - test.pm.community.intersystems.com

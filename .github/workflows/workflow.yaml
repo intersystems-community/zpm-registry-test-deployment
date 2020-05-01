@@ -1,9 +1,10 @@
-name: Build ZPM-registry image, deploy it to GCR. Run GKE. Run ZPM-registry in GKE
+name: Build ZPM-registry image, deploy it to GCR. Run ZPM-registry in GKE
 
 on:
   push:
     branches:
-    - master
+    # - master
+    - remove-terraform
 
 # Environment variables.
 # ${{ secrets }} are taken from GitHub -> Settings -> Secrets
@@ -19,7 +20,7 @@ env:
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
   K8S_NAMESPACE: iris
   STATEFULSET_NAME: zpm-registry
-  DNS_ZONE: testpm.community.intersystems.com
+  DNS_ZONE: test.pm.community.intersystems.com
   HELM_VERSION: 3.1.1
   EXTERNAL_DNS_CHART_VERSION: 2.20.6
 
@@ -49,44 +50,6 @@ jobs:
     - name: Publish ZPM image to Google Container Registry
       run: |
         docker push ${GCR_LOCATION}/${PROJECT_ID}/${IMAGE_NAME}:${GITHUB_SHA}
-
-  gke-provisioner:
-    # Inspired by:
-    ## https://www.terraform.io/docs/github-actions/getting-started.html
-    ## https://github.com/hashicorp/terraform-github-actions
-    name: Provision GKE cluster
-    runs-on: ubuntu-18.04
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Terraform init
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'init'
-        tf_actions_working_dir: 'terraform'
-
-    - name: Terraform validate
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'validate'
-        tf_actions_working_dir: 'terraform'
-
-    - name: Terraform plan
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'plan'
-        tf_actions_working_dir: 'terraform'
-
-    - name: Terraform apply
-      uses: hashicorp/terraform-github-actions@master
-      with:
-        tf_actions_version: 0.12.17
-        tf_actions_subcommand: 'apply'
-        tf_actions_working_dir: 'terraform'
 
   kubernetes-deploy:
     name: Deploy Kubernetes manifests to GKE cluster
