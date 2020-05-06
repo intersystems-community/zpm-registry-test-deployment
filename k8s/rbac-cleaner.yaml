@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: zpm-cleaner
+  namespace: iris
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: zpm-cleaner
+  namespace: iris
+rules:
+- apiGroups: ["apps"]
+  resources: ["statefulsets"]
+  verbs: ["patch"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: zpm-cleaner
+  namespace: iris
+subjects:
+- kind: ServiceAccount
+  name: zpm-cleaner
+  namespace: iris
+roleRef:
+  kind: Role
+  name: zpm-cleaner
+  apiGroup: rbac.authorization.k8s.io

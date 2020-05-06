@@ -77,4 +77,6 @@ jobs:
         kubectl apply -f service.yaml
         kubectl apply -f ingress.yaml
         kubectl apply -f statefulset.yaml
+        kubectl apply -f rbac-cleaner.yaml
+        kubectl apply -f cronjob-cleaner.yaml
         kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${STATEFULSET_NAME}
