@@ -5,7 +5,7 @@ ZPM Registry hosts ZPM packages and publishes API to publish, list and deploy pa
 
 This is a test package .Available [here](https://testpm.community.intersystems.com/registry).
 
-ZPM registry version: 1.0.4
+ZPM registry version: 1.0.5
 
 
 InterSystems Developers Community has the the public ZPM Registry - Commmunity Registry hosted on pm.community.intersystems.com and this code works there. Here is [the list of available packages](https://pm.community.intersystems.com/packages/-/all).
