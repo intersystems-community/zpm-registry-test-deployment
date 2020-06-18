@@ -1,4 +1,4 @@
-FROM intersystemsdc/iris-community:2020.1.0.215.0-zpm
+FROM intersystemsdc/iris-community:2020.2.0.204.0-zpm
 
 USER root
 
