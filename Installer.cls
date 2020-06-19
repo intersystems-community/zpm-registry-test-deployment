@@ -54,7 +54,13 @@ ClassMethod LockRegistry(pUsername As %String, pPassword As %String, Namespace, 
         If $$$ISERR(tSC) q tSC
         w !,"Modify /registry "
 
-	// 5. Modify service_terminal AutheEnabled = 48 ; Operating System,Password
+    // 5. Modify /api/monitor AutheEnabled = 64 ; Unauthenticated
+        set prop("AutheEnabled")=64
+        set tSC=##class(Security.Applications).Modify("/api/monitor",.prop)
+        If $$$ISERR(tSC) q tSC
+        w !,"Modify /api/monitor "
+
+    // 6. Modify service_terminal AutheEnabled = 48 ; Operating System,Password
         set name="%service_terminal"
         set prop("Enabled")=1
         set prop("AutheEnabled")=48 ; Operating System,Password
