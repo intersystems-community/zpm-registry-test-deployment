@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: lets-encrypt-production
   name: zpm-registry
   namespace: iris
 spec:
