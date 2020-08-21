@@ -2,11 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    kubernetes.io/ingress.class: gce
-#    kubernetes.io/ingress.allow-http: "false"
-    networking.gke.io/managed-certificates: zpm-registry-certificate
-    external-dns.alpha.kubernetes.io/hostname: test.pm.community.intersystems.com
-    kubernetes.io/ingress.global-static-ip-name: test-pm
+    kubernetes.io/ingress.class: nginx
   name: zpm-registry
   namespace: iris
 spec:
@@ -17,4 +13,8 @@ spec:
       - backend:
           serviceName: zpm-registry
           servicePort: 52773
-        path: /*
+        path: /
+  tls:
+  - hosts:
+    - test.pm.community.intersystems.com
+    secretName: test.pm.community.intersystems.com
